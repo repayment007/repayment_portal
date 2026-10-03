@@ -1,0 +1,109 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span [routerLink]="['/blog-posts']" style="cursor:pointer">Blog Posts</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Write article</span>
+    </div>
+    <h2>Write New Article</h2>
+    <p>Create educational content or platform updates for your community.</p>
+  </div>
+
+  <div class="card card-pad" style="max-width: 900px;">
+    <div class="form-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+      
+      <!-- Main Content Area -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="fi">
+          <label class="fl">Article Title</label>
+          <input 
+            class="si-input" 
+            style="font-size: 18px; font-weight: 700;" 
+            type="text" 
+            [(ngModel)]="postForm.title" 
+            (input)="generateSlug()" 
+            placeholder="e.g. 5 Common Phishing Tactics to Watch Out For"
+          >
+        </div>
+
+        <div class="fi">
+          <label class="fl">URL Slug</label>
+          <div style="display: flex; align-items: center; background: var(--bg-soft); border-radius: 8px; padding: 0 12px; border: 1px solid var(--border);">
+            <span style="font-size: 13px; color: var(--muted); padding-right: 4px;">/blog/</span>
+            <input 
+              class="si-input" 
+              style="border: none; padding: 10px 0; background: transparent; font-family: monospace;" 
+              type="text" 
+              [(ngModel)]="postForm.slug" 
+              placeholder="how-to-avoid-scams"
+            >
+          </div>
+        </div>
+
+        <div class="fi">
+          <label class="fl">Content</label>
+          <textarea 
+            class="si-input" 
+            rows="15" 
+            [(ngModel)]="postForm.content" 
+            placeholder="Write your article content in Markdown or Plain Text..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Sidebar Configuration -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <!-- Author (Simple Text Input) -->
+        <div class="fi">
+          <label class="fl">Author (Optional)</label>
+          <input 
+            type="text" 
+            class="si-input" 
+            [(ngModel)]="postForm.author" 
+            placeholder="e.g. Admin, Sarah A."
+          >
+        </div>
+
+        <div class="fi">
+          <label class="fl">Status</label>
+          <select class="si-input" [(ngModel)]="postForm.status">
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+            <option value="SCHEDULED">Scheduled</option>
+          </select>
+        </div>
+
+        <div class="fi">
+          <label class="fl">Tags</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input 
+              class="si-input" 
+              type="text" 
+              [(ngModel)]="tagInput" 
+              (keyup.enter)="addTag()" 
+              placeholder="Type and press Enter"
+            >
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span *ngFor="let tag of postForm.tags" class="badge" style="background: var(--bg-soft); border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; padding: 4px 8px;">
+              #{{ tag }}
+              <svg (click)="removeTag(tag)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px; height:12px; cursor:pointer;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="fta" style="margin-top: 30px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 20px;">
+      <button class="btn-ol" [routerLink]="['/blog-posts']">Cancel</button>
+      <button class="btn-primary" (click)="save()" [disabled]="isSaving">
+        <span *ngIf="!isSaving">Save Article</span>
+        <span *ngIf="isSaving">Saving...</span>
+      </button>
+    </div>
+  </div>
+</div>

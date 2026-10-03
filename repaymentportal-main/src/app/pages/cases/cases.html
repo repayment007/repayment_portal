@@ -1,0 +1,141 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span>Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Case Management</span>
+      <span class="breadcrumb-sep">/</span>
+      <span *ngIf="viewMode === 'list'">Cases</span>
+      <span *ngIf="viewMode === 'view'">Case Details</span>
+    </div>
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 *ngIf="viewMode === 'list'">Cases</h2>
+        <h2 *ngIf="viewMode === 'view'">Case: {{ selectedCase?.caseNumber }}</h2>
+        <p *ngIf="viewMode === 'list'">View and manage all active and archived cases.</p>
+        <p *ngIf="viewMode === 'view'">Detailed information for {{ selectedCase?.clientName }}</p>
+      </div>
+      <button *ngIf="viewMode === 'view'" class="btn-ol" (click)="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to List
+      </button>
+    </div>
+  </div>
+
+  <!-- LIST MODE -->
+  <div *ngIf="viewMode === 'list'">
+    <div class="toolbar">
+      <div class="srch-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="srch-inp" placeholder="Search cases by number or client name...">
+      </div>
+      <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</button>
+      <button class="btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Case</button>
+    </div>
+
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Case Number</th>
+              <th>Client</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Opened Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (caseItem of cases; track caseItem.id) {
+              <tr (click)="viewCase(caseItem)">
+                <td><div style="font-weight:600;">{{ caseItem.caseNumber }}</div></td>
+                <td>{{ caseItem.clientName }}</td>
+                <td>{{ caseItem.type }}</td>
+                <td><span class="pill" [ngClass]="getStatusClass(caseItem.status)">{{ caseItem.status }}</span></td>
+                <td>{{ caseItem.openedDate }}</td>
+                <td>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn-ol" style="padding:4px 8px;font-size:11px;" (click)="$event.stopPropagation(); viewCase(caseItem)">View</button>
+                    <button class="btn-ol" style="padding:4px 8px;font-size:11px;" (click)="$event.stopPropagation()">Edit</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW MODE -->
+  <div *ngIf="viewMode === 'view'" class="subpage active">
+    <div class="view-hero">
+      <div class="view-hdr">
+        <div style="display:flex; gap: 20px; align-items: center;">
+          <div class="prof-av-lg">{{ selectedCase?.clientName.substring(0,2).toUpperCase() }}</div>
+          <div>
+            <h3 style="font-size: 24px; margin-bottom: 4px;">{{ selectedCase?.clientName }}</h3>
+            <span class="pill" [ngClass]="getStatusClass(selectedCase?.status)">{{ selectedCase?.status }}</span>
+            <span class="pill pill-active" style="margin-left:8px;">{{ selectedCase?.priority }} Priority</span>
+          </div>
+        </div>
+        <div class="view-actions">
+          <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit Case</button>
+          <button class="btn-primary" (click)="router.navigate(['/casenotes'])">Add Case Note</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card card-pad">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Case Information
+        </div>
+        <div class="info-grid">
+          <div class="ii">
+            <div class="il">Case Number</div>
+            <div class="iv">{{ selectedCase?.caseNumber }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Case Type</div>
+            <div class="iv">{{ selectedCase?.type }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Opened Date</div>
+            <div class="iv">{{ selectedCase?.openedDate }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Assigned To</div>
+            <div class="iv">{{ selectedCase?.assignedTo }}</div>
+          </div>
+          <div class="ii" style="grid-column: 1 / -1;">
+            <div class="il">Description</div>
+            <div class="iv">{{ selectedCase?.description }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction: column; gap: 16px;">
+        <div class="card card-pad">
+          <div class="card-title">Case Timeline</div>
+          <div class="activity-item">
+            <div class="act-dot-col"><div class="act-dot green"></div><div class="act-line"></div></div>
+            <div>
+              <div class="act-msg">Case opened by Admin</div>
+              <div class="act-time">{{ selectedCase?.openedDate }}</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot-col"><div class="act-dot gold"></div></div>
+            <div>
+              <div class="act-msg">Last update recorded</div>
+              <div class="act-time">{{ selectedCase?.lastUpdate }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

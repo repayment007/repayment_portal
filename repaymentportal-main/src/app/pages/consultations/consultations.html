@@ -1,0 +1,56 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span>Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Services</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Consultations</span>
+    </div>
+    <h2>Consultations</h2>
+    <p>Manage and schedule client consultations.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="srch-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="srch-inp" placeholder="Search consultations by client or consultant...">
+    </div>
+    <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</button>
+    <button class="btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Consultation</button>
+  </div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Consultant</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cons of consultations; track cons.id) {
+            <tr>
+              <td><div style="font-weight:600;">{{ cons.clientName }}</div></td>
+              <td>{{ cons.consultant }}</td>
+              <td>{{ cons.type }}</td>
+              <td><span class="pill" [ngClass]="getStatusClass(cons.status)">{{ cons.status }}</span></td>
+              <td>{{ cons.date }}</td>
+              <td>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn-ol" style="padding:4px 8px;font-size:11px;">Edit</button>
+                  <button class="btn-danger" style="padding:4px 8px;font-size:11px;">Delete</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

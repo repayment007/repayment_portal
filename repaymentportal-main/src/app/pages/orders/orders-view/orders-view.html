@@ -1,0 +1,155 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span [routerLink]="['/orders']" style="cursor:pointer">Orders</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>View Order</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+      <h2>Order Details</h2>
+      <span *ngIf="order" class="pill" [ngClass]="getStatusClass(order.status)">{{ order.status }}</span>
+    </div>
+    <p>Reference: <span style="font-family: monospace; font-weight: 700;">{{ order?.id }}</span></p>
+  </div>
+
+  <div *ngIf="loading" style="padding: 100px 0; text-align: center;">
+    <div class="skeleton" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px;"></div>
+    <div class="skeleton" style="width: 200px; height: 20px; margin: 0 auto;"></div>
+  </div>
+
+  <div *ngIf="errorMsg" class="card card-pad" style="border-color: var(--danger); background: rgba(239, 68, 68, 0.05); text-align: center;">
+    <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+    <div style="font-weight: 700; color: var(--danger);">{{ errorMsg }}</div>
+    <button class="btn-ol" style="margin-top: 16px;" [routerLink]="['/orders']">Back to Orders</button>
+  </div>
+
+  <div *ngIf="order && !loading" style="display: grid; grid-template-columns: 1fr 340px; gap: 20px;">
+    <!-- Left Column: Order Content -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <!-- Customer Info -->
+      <div class="card card-pad">
+        <h3 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Customer Information
+        </h3>
+        <div class="info-grid">
+          <div class="ii">
+            <div class="il">Full Name</div>
+            <div class="iv">{{ order.clientId?.fullName || order.email || 'N/A' }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Email Address</div>
+            <div class="iv">{{ order.clientId?.email || order.email || 'N/A' }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Phone Number</div>
+            <div class="iv">{{ order.clientId?.phone || order.phone || 'N/A' }}</div>
+          </div>
+          <div class="ii">
+            <div class="il">Customer Type</div>
+            <div class="iv">{{ order.clientId ? 'Registered User' : 'Guest' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan/Package Info -->
+      <div class="card card-pad">
+        <h3 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Package Details
+        </h3>
+        <div *ngIf="order.packageId" class="info-grid" style="grid-template-columns: 1fr;">
+          <div class="ii" style="border-left: 4px solid var(--accent);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="il">Selected Plan</div>
+                <div class="iv" style="font-size: 18px; font-weight: 700; color: var(--accent);">{{ order.packageId.name }}</div>
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">{{ order.packageId.category }}</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="il">Amount Paid</div>
+                <div class="iv" style="font-size: 24px; font-weight: 800; color: var(--text);">{{ order.packageId.price | currency:'NGN':'symbol-narrow' }}</div>
+              </div>
+            </div>
+            <div *ngIf="order.packageId.features?.length" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+              <div class="il">Included Features</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <span *ngFor="let feat of order.packageId.features" class="pill" style="background: var(--surface3); color: var(--text2); font-weight: 500;">
+                  ✓ {{ feat }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!order.packageId" style="padding: 20px; text-align: center; color: var(--muted); border: 2px dashed var(--border); border-radius: 10px;">
+          No specific package linked to this order.
+        </div>
+      </div>
+
+      <!-- Related Case -->
+      <div class="card card-pad" *ngIf="order.caseId">
+        <h3 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Related Recovery Case
+        </h3>
+        <div class="ii" style="cursor: pointer; transition: all 0.2s;" [routerLink]="['/cases', order.caseId.id]">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="il">Case Reference</div>
+              <div class="iv">{{ order.caseId.caseId || order.caseId.id }}</div>
+              <div class="iv" style="font-size: 12px; margin-top: 4px;">{{ order.caseId.caseType }}</div>
+            </div>
+            <div class="hdr-icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Status & Timeline -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="card card-pad">
+        <h3 class="section-title">Order Actions</h3>
+        
+        <div class="fg">
+          <label class="fl">Update Order Status</label>
+          <select class="fs" [ngModel]="order.status" (ngModelChange)="updateStatus($event)" [disabled]="updating">
+            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+          </select>
+          <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">
+            Changing status will notify the user if email triggers are enabled.
+          </p>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn-ol" style="width: 100%;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Invoice
+          </button>
+          <button class="btn-ol" style="width: 100%; color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Cancel Order
+          </button>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <h3 class="section-title">Order Timeline</h3>
+        <div class="activity-feed">
+          <div class="activity-item" style="border-bottom: none;">
+            <div class="act-dot-col">
+              <div class="act-dot green"></div>
+            </div>
+            <div>
+              <div class="act-msg">Order initiated via {{ order.clientId ? 'Portal' : 'Guest Checkout' }}</div>
+              <div class="act-time">{{ order.createdAt | date:'medium' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

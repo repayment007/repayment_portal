@@ -1,0 +1,56 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span>Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Content Management</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Testimonials</span>
+    </div>
+    <h2>Testimonials</h2>
+    <p>Manage and display customer feedback and success stories.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="srch-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="srch-inp" placeholder="Search testimonials by author or company...">
+    </div>
+    <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</button>
+    <button class="btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Testimonial</button>
+  </div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th>Company</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (testi of testimonials; track testi.id) {
+            <tr>
+              <td><div style="font-weight:600;">{{ testi.author }}</div></td>
+              <td>{{ testi.company }}</td>
+              <td>{{ testi.rating }} / 5</td>
+              <td><span class="pill" [ngClass]="getStatusClass(testi.status)">{{ testi.status }}</span></td>
+              <td>{{ testi.date }}</td>
+              <td>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn-ol" style="padding:4px 8px;font-size:11px;">Edit</button>
+                  <button class="btn-danger" style="padding:4px 8px;font-size:11px;">Delete</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

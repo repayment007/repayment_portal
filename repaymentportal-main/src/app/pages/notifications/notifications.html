@@ -1,0 +1,112 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Communication</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Notifications</span>
+    </div>
+    <h2>Personal Alerts & Notifications</h2>
+    <p>View and manage information alerts sent to you by the system.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="srch-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="srch-inp" placeholder="Search notifications by title...">
+    </div>
+    <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</button>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40px;"></th>
+            <th>Alert Title</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Skeleton Loading -->
+          <ng-container *ngIf="loading">
+            <tr *ngFor="let item of [1,2,3,4]">
+              <td><div class="skeleton" style="width:12px; height:12px; border-radius:50%"></div></td>
+              <td><div class="skeleton" style="width:160px; height:14px;"></div></td>
+              <td><div class="skeleton" style="width:80px; height:20px; border-radius:10px;"></div></td>
+              <td><div class="skeleton" style="width:100px; height:14px;"></div></td>
+              <td style="text-align:right">
+                <div class="skeleton" style="width:30px; height:30px; border-radius:8px; margin-left:auto;"></div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Data Rows -->
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let notif of notifications" (click)="viewNotification(notif)" style="cursor: pointer;" [class.unread-row]="!notif.read">
+              <td>
+                <div class="np-dot" *ngIf="!notif.read"></div>
+              </td>
+              <td>
+                <div [style.font-weight]="!notif.read ? '700' : '400'" style="color:var(--text); display: flex; align-items: center; gap: 10px;">
+                  {{ notif.title }}
+                </div>
+              </td>
+              <td>
+                <span class="pill" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-weight: 600;">{{ notif.type || 'SYSTEM' }}</span>
+              </td>
+              <td>
+                <div style="font-size:12px; color:var(--muted);">{{ notif.createdAt | date:'medium' }}</div>
+              </td>
+              <td style="text-align:right" (click)="$event.stopPropagation()">
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                  <button class="hdr-icon-btn" style="width:32px; height:32px;" (click)="viewNotification(notif)" title="View Details">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <tr *ngIf="!loading && notifications.length === 0">
+            <td colspan="5">
+              <div style="padding:48px 0; text-align:center;">
+                <div style="font-size:32px; margin-bottom:12px;">🔔</div>
+                <div style="font-weight:700; color:var(--text);">No notifications found</div>
+                <div style="font-size:12.5px; color:var(--muted); margin-top:4px;">When you receive system alerts, they will appear here.</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Detail Modal -->
+<app-modal [show]="isModalOpen" [title]="selectedNotification?.title || 'Notification'" (onClose)="onModalClose()">
+  <div class="notif-detail" *ngIf="selectedNotification">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+      <span class="pill" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border);">{{ selectedNotification.type || 'SYSTEM' }}</span>
+      <span style="font-size: 13px; color: var(--muted);">{{ selectedNotification.createdAt | date:'medium' }}</span>
+    </div>
+    
+    <div style="font-size: 16px; line-height: 1.7; color: var(--text); white-space: pre-wrap;">
+      {{ selectedNotification.message }}
+    </div>
+    
+    <div *ngIf="selectedNotification.refId" style="margin-top: 32px; padding-top: 20px; border-top: 1px dashed var(--border);">
+      <button class="btn-primary" style="width: 100%; height: 44px; font-weight: 600;" 
+              [routerLink]="selectedNotification.refModel === 'Consultation' ? ['/consultations', selectedNotification.refId] : 
+                           (selectedNotification.refModel === 'Order' ? ['/orders', selectedNotification.refId] : 
+                           (selectedNotification.refModel === 'User' ? ['/users', selectedNotification.refId] : []))"
+              (click)="onModalClose()">
+        View Related Record
+      </button>
+    </div>
+  </div>
+</app-modal>

@@ -1,0 +1,100 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span [routerLink]="['/blog-posts']" style="cursor:pointer">Blog Posts</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Article Details</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h2>Article Preview</h2>
+        <p>Review the drafted or published content before it goes live.</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ol" [routerLink]="['/blog-posts']">Back to list</button>
+        <button *ngIf="post" class="btn-primary" [routerLink]="['/blog-posts', post.id, 'edit']">Edit Article</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="card card-pad" style="text-align:center; padding:100px 0;">
+    <div class="skeleton" style="width:100%; height:400px; border-radius:12px;"></div>
+  </div>
+
+  <div *ngIf="!loading && post" class="detail-grid" style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 24px; align-items: start;">
+    
+    <!-- Main Content -->
+    <div class="card card-pad">
+      <div style="margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 15px; color: var(--text);">{{ post.title }}</h1>
+        <div style="display: flex; gap: 15px; align-items: center; color: var(--muted); font-size: 14px;">
+          <span>Published on {{ (post.createdAt || post.date) | date:'longDate' }}</span>
+          <span class="breadcrumb-sep">/</span>
+          <span>Slug: {{ post.slug }}</span>
+        </div>
+      </div>
+
+      <div style="font-size: 16px; line-height: 1.8; color: var(--text); white-space: pre-wrap; margin-bottom: 40px;">
+        {{ post.content }}
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span *ngFor="let tag of post.tags" class="badge" style="background: var(--accent-bg); color: var(--accent); padding: 6px 12px; font-weight: 600;">
+          #{{ tag }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Article Info -->
+    <div class="card card-pad">
+      <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 16px;">Publishing Details</h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div>
+          <label class="fl" style="margin-bottom: 5px;">Status</label>
+          <span class="pill" [ngClass]="getStatusClass(post.status)">
+            {{ post.status }}
+          </span>
+        </div>
+
+        <div style="padding-top: 15px; border-top: 1px solid var(--border);">
+          <label class="fl">Article Author</label>
+          <div style="display: flex; gap: 12px; align-items: center; margin-top: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+              {{ post.author?.charAt(0) || 'A' }}
+            </div>
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">{{ post.author || 'Assistant' }}</div>
+              <div style="font-size: 11px; color: var(--muted);">Verified Author</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding-top: 15px; border-top: 1px solid var(--border);">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+            <span style="color: var(--muted);">Version</span>
+            <span style="font-weight: 600;">1.0.0</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span style="color: var(--muted);">Word Count</span>
+            <span style="font-weight: 600;">{{ post.content?.split(' ').length || 0 }} words</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-ol" style="width: 100%; margin-top: 25px;" [routerLink]="['/blog-posts', post.id, 'edit']">
+        Edit Content
+      </button>
+    </div>
+
+  </div>
+
+  <div *ngIf="!loading && !post" class="card card-pad" style="text-align:center; padding:100px 0;">
+    <div style="font-size: 32px; margin-bottom: 20px;">📰</div>
+    <h3>Article not found</h3>
+    <p>The post you are looking for has been moved or deleted.</p>
+    <button class="btn-primary" style="margin-top: 20px;" [routerLink]="['/blog-posts']">Return to Library</button>
+  </div>
+</div>

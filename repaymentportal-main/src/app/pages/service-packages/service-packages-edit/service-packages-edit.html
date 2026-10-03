@@ -1,0 +1,74 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span [routerLink]="['/service-packages']" style="cursor:pointer">Service Packages</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Edit Package</span>
+    </div>
+    <div style="display:flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2>Edit Service Package</h2>
+        <p>Modify the package details and pricing below.</p>
+      </div>
+      <button class="btn-ol" [routerLink]="['/service-packages']">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to List
+      </button>
+    </div>
+  </div>
+
+  <div class="card card-pad" *ngIf="!loading">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Package Details
+    </div>
+    
+    <div class="form-grid">
+      <div *ngIf="errorMsg" class="fg full" style="color: red; margin-bottom: 15px;">
+        {{ errorMsg }}
+      </div>
+      <div class="fg">
+        <label class="fl">Package Name *</label>
+        <input type="text" class="fi" [(ngModel)]="packageForm.name" placeholder="e.g. Premium Care">
+      </div>
+      <div class="fg">
+        <label class="fl">Slug (Optional)</label>
+        <input type="text" class="fi" [(ngModel)]="packageForm.slug" placeholder="e.g. premium-care">
+      </div>
+      <div class="fg">
+        <label class="fl">Price ($) *</label>
+        <input type="number" class="fi" [(ngModel)]="packageForm.price" placeholder="0.00">
+      </div>
+      <div class="fg">
+        <label class="fl">Price Per Tx ($)</label>
+        <input type="number" class="fi" [(ngModel)]="packageForm.pricePerTx" placeholder="0.00">
+      </div>
+      <div class="fg">
+        <label class="fl">Status</label>
+        <select class="fs" [(ngModel)]="packageForm.isActive">
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+      </div>
+      <div class="fg full">
+        <label class="fl">Features</label>
+        <div *ngFor="let feature of packageForm.features; let i = index; trackBy: trackByFn" style="display: flex; margin-bottom: 10px; gap: 10px;">
+          <input type="text" class="fi" [(ngModel)]="packageForm.features[i]" placeholder="e.g. 24/7 Telephone Support" style="flex: 1;">
+          <button class="btn-ghost" (click)="removeFeature(i)" style="padding: 0 15px; color: #e74c3c;">Remove</button>
+        </div>
+        <button class="btn-ol" (click)="addFeature()" style="margin-top: 5px;">+ Add Feature</button>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button class="btn-ghost" [routerLink]="['/service-packages']">Cancel</button>
+      <button class="btn-primary" (click)="save()">Save Changes</button>
+    </div>
+  </div>
+
+  <div class="card card-pad" *ngIf="loading" style="text-align: center; padding: 40px;">
+    <p>Loading package details...</p>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Case Management</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Cases</span>
+    </div>
+    <h2>Cases Management</h2>
+    <p>Track and manage client cases, statuses, and recovery progress.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="srch-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="srch-inp" placeholder="Search cases by number or client name...">
+    </div>
+    <button class="btn-ol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg> Filter</button>
+    <button class="btn-primary" [routerLink]="['/cases/create']"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Case</button>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Type / Scheme</th>
+            <th>Amount Lost</th>
+            <th>Status</th>
+            <th>Opened</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Skeleton Loading -->
+          <ng-container *ngIf="loading">
+            <tr *ngFor="let item of [1,2,3,4,5]">
+              <td>
+                <div class="skeleton" style="width:120px; height:14px; margin-bottom:6px;"></div>
+                <div class="skeleton" style="width:80px; height:10px;"></div>
+              </td>
+              <td><div class="skeleton" style="width:100px; height:14px;"></div></td>
+              <td><div class="skeleton" style="width:90px; height:14px;"></div></td>
+              <td><div class="skeleton" style="width:70px; height:20px; border-radius:20px;"></div></td>
+              <td><div class="skeleton" style="width:100px; height:14px;"></div></td>
+              <td style="text-align:right">
+                <div class="skeleton" style="width:30px; height:30px; border-radius:8px; margin-left:auto;"></div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Data Rows -->
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let c of cases" [routerLink]="['/cases', c.id]">
+              <td>
+                <div style="font-weight:700; color:var(--text); letter-spacing: 0.5px;">{{ c.caseNumber }}</div>
+                <div style="font-size:11px; color:var(--muted); margin-top: 2px;">ID: {{ c.id | slice:-6 }}</div>
+              </td>
+              <td>
+                <div style="font-size:13px; font-weight: 500;">{{ c.scamType || c.type }}</div>
+              </td>
+              <td>
+                <div style="font-size:13.5px; font-weight: 600; color: var(--danger);">{{ c.amountLost | currency:c.currency || 'USD' }}</div>
+              </td>
+              <td>
+                <span class="pill" [ngClass]="getStatusClass(c.status)">
+                  {{ c.status }}
+                </span>
+              </td>
+              <td>
+                <div style="font-size:12px; color:var(--muted);">{{ (c.createdAt || c.openedDate) | date:'MMM d, y' }}</div>
+              </td>
+              <td style="text-align:right" (click)="$event.stopPropagation()">
+                <div style="display:flex; justify-content:flex-end; gap:6px;">
+                  <button class="hdr-icon-btn" style="width:32px; height:32px;" [routerLink]="['/cases', c.id, 'edit']">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <button class="hdr-icon-btn" style="width:32px; height:32px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <tr *ngIf="!loading && cases.length === 0">
+            <td colspan="6">
+              <div style="padding:48px 0; text-align:center;">
+                <div style="font-size:24px; margin-bottom:12px;">📁</div>
+                <div style="font-weight:700; color:var(--text);">No cases found</div>
+                <div style="font-size:12.5px; color:var(--muted); margin-top:4px;">No cases match your current filters.</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

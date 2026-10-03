@@ -1,0 +1,104 @@
+<div class="subpage active">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span [routerLink]="['/dashboard']" style="cursor:pointer">Dashboard</span>
+      <span class="breadcrumb-sep">/</span>
+      <span [routerLink]="['/testimonials']" style="cursor:pointer">Testimonials</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Testimonial Details</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h2>Testimonial Details</h2>
+        <p>Review the full success story and linked client information.</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ol" [routerLink]="['/testimonials']">Back to list</button>
+        <button *ngIf="testimonial" class="btn-primary" [routerLink]="['/testimonials', testimonial.id, 'edit']">Edit Testimonial</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="card card-pad" style="text-align:center; padding:100px 0;">
+    <div class="skeleton" style="width:100%; height:300px; border-radius:12px;"></div>
+  </div>
+
+  <div *ngIf="!loading && testimonial" class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start;">
+    
+    <div class="card card-pad">
+      <div style="margin-bottom: 30px;">
+        <label class="fl" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Success Story Content</label>
+        <div style="font-size: 18px; line-height: 1.6; color: var(--text); font-style: italic;">
+          "{{ testimonial.content }}"
+        </div>
+      </div>
+
+      <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div>
+          <label class="fl">Status</label>
+          <span class="pill" [ngClass]="getStatusClass(testimonial.approved)" style="display: inline-block;">
+            {{ testimonial.approved ? 'Approved' : 'Pending' }}
+          </span>
+        </div>
+        <div>
+          <label class="fl">Rating</label>
+          <div style="display:flex; gap:4px; color: #fbbf24; font-size: 18px;">
+            <span *ngFor="let s of [1,2,3,4,5]">{{ testimonial.rating >= s ? '★' : '☆' }}</span>
+          </div>
+        </div>
+        <div>
+          <label class="fl">Country</label>
+          <div style="font-weight: 600;">{{ testimonial.country || 'N/A' }}</div>
+        </div>
+        <div>
+          <label class="fl">Scam Type</label>
+          <div style="font-weight: 600;">{{ testimonial.scamType || 'N/A' }}</div>
+        </div>
+        <div *ngIf="testimonial.videoUrl" style="grid-column: span 2;">
+          <label class="fl">Video URL</label>
+          <a [href]="testimonial.videoUrl" target="_blank" style="color: var(--accent); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px; height:16px;"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+            Watch Video Testimonial
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad">
+      <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 16px;">Client Information</h3>
+      
+      <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid var(--border);">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--accent-bg); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
+          {{ testimonial.authorName?.charAt(0) }}
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 16px;">{{ testimonial.authorName }}</div>
+          <div style="font-size: 13px; color: var(--muted);">ID: {{ testimonial.clientId }}</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="font-size: 13px; color: var(--muted);">Date Created</span>
+          <span style="font-size: 13px; font-weight: 600;">{{ (testimonial.createdAt || testimonial.date) | date:'mediumDate' }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="font-size: 13px; color: var(--muted);">Verified Client</span>
+          <span style="font-size: 13px; font-weight: 600; color: #10b981;">Yes</span>
+        </div>
+      </div>
+
+      <button class="btn-ol" style="width: 100%; margin-top: 25px;" [routerLink]="['/users', testimonial.clientId]">
+        View Client Profile
+      </button>
+    </div>
+
+  </div>
+
+  <div *ngIf="!loading && !testimonial" class="card card-pad" style="text-align:center; padding:100px 0;">
+    <div style="font-size: 40px; margin-bottom: 20px;">🔍</div>
+    <h3>Testimonial not found</h3>
+    <p>The testimonial you are looking for does not exist or has been removed.</p>
+    <button class="btn-primary" style="margin-top: 20px;" [routerLink]="['/testimonials']">Return to List</button>
+  </div>
+</div>
